@@ -9,7 +9,13 @@ class Ball {
   Ball(){
     x = random(600);
     y = 500;
-    dirX = 1;
+    if(int(random(2))%2 == 0) {
+      dirX = -1;
+    } else {
+      dirX = 1;
+    }
+    
+    
     dirY = -1;
     v = 2;
     
@@ -80,8 +86,15 @@ class Block {
           if(my_ball[j].y - 10 < blockY + 30 && my_ball[j].y + 10 > blockY && my_ball[j].x - 10 < blockX + 100 && my_ball[j].x + 10 > blockX && blocks[i] == true) {
             my_ball[j].dirY = 1;
             blocks[i] = false; 
+            score += 10;
+          }
+          if(my_ball[j].y > 585) {
+            textSize(50);
+            text("Game Over", 170, 200);
+            noLoop();
           }
         }
+        
      }
   }
   
@@ -94,6 +107,18 @@ class Block {
       blockY = i/6 * 30;
       rect(blockX, blockY, 100, 30);
       blocks[i] = true;
+    }
+  }
+  
+  void checkClear() {
+    for(int i=0; i<18; i++) {
+      if(blocks[i] == true) {
+        return;
+      }
+      textSize(50);
+      text("Clear", 230, 200);
+      noLoop();
+      
     }
   }
   
@@ -136,6 +161,7 @@ Block my_block;
 int numBall = 100;
 int prevMs = 0;
 int cnt = 0;
+int score = 0;
 
 //起動時実行
 void setup() {
@@ -155,7 +181,7 @@ void setup() {
 //繰り返し実行
 void draw() {
   //一定時間ごとに実行
-  if(millis() > prevMs + 5000) {
+  if(millis() > prevMs + 10000) {
     my_ball[cnt] = new Ball();
     cnt++;
     prevMs = millis();
@@ -167,7 +193,8 @@ void draw() {
   for(int i=0; i<cnt; i++) {
     my_ball[i].show();
   }
-  
+  my_block.checkClear();
+  scoreShow();
 }
 
 void keyPressed() {
@@ -178,4 +205,10 @@ void keyPressed() {
        my_bar.moveLeft(); //my_ballオブジェクトのmoveLeft()メソッドを実行
      }
   }
+}
+
+void scoreShow() {
+  textSize(24);
+  fill(0,0,100);
+  text("score:"+score, 260, 25);
 }
