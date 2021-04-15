@@ -9,9 +9,15 @@ class Ball {
   Ball(){
     x = random(600);
     y = 500;
-    dirX = 1;
+    if(int(random(2))%2 == 0) {
+      dirX = -1;
+    } else {
+      dirX = 1;
+    }
+    
+    
     dirY = -1;
-    v = 3;
+    v = 2;
     
   }
 
@@ -46,8 +52,6 @@ class Ball {
         dirY = -1;
       }
   
-      fill(43,6,94);
-      rect(0, 0, 600, 600);
       noStroke();
       fill(201,26,47);
       x += v*dirX;
@@ -78,12 +82,19 @@ class Block {
           rect(blockX, blockY, 100, 30);
         }
         //接触条件
-        if(checkBallHit(i)) {
-          for(int j=0; j<numBall; j++) {
+        for(int j=0; j<cnt; j++) {
+          if(my_ball[j].y - 10 < blockY + 30 && my_ball[j].y + 10 > blockY && my_ball[j].x - 10 < blockX + 100 && my_ball[j].x + 10 > blockX && blocks[i] == true) {
             my_ball[j].dirY = 1;
+            blocks[i] = false; 
+            score += 10;
           }
-          blocks[i] = false;
+          if(my_ball[j].y > 585) {
+            textSize(50);
+            text("Game Over", 170, 200);
+            noLoop();
+          }
         }
+        
      }
   }
   
@@ -99,7 +110,20 @@ class Block {
     }
   }
   
-  boolean checkBallHit(int i) {
+  void checkClear() {
+    for(int i=0; i<18; i++) {
+      if(blocks[i] == true) {
+        return;
+      }
+      textSize(50);
+      text("Clear", 230, 200);
+      noLoop();
+      
+    }
+  }
+  
+  //関数呼び出しにするとおそらく処理速度が間に合わずにdirY = 1 が効いてない
+  /*boolean checkBallHit(int i) {
     for(int j=0; j<numBall; j++) {
       if(my_ball[j].y - 10 < blockY + 30 && my_ball[j].y + 10 > blockY && my_ball[j].x - 10 < blockX + 100 && my_ball[j].x + 10 > blockX && blocks[i] == true) {
       return true;
@@ -107,6 +131,8 @@ class Block {
     }
     return false;
   }
+  */
+  
   
 }//class Block
 
@@ -132,7 +158,10 @@ Ball[] my_ball;
 Bar my_bar;
 Block my_block;
 
-int numBall = 2;
+int numBall = 100;
+int prevMs = 0;
+int cnt = 0;
+int score = 0;
 
 //起動時実行
 void setup() {
@@ -141,9 +170,8 @@ void setup() {
   background(255);
   ellipseMode(RADIUS);
   my_ball = new Ball[numBall];
-  for(int i=0; i<numBall; i++) {
-    my_ball[i] = new Ball();
-  }
+  my_ball[cnt] = new Ball();
+  cnt++;
   my_bar = new Bar();
   my_block = new Block();
   my_block.createBlocks();
@@ -152,11 +180,21 @@ void setup() {
 
 //繰り返し実行
 void draw() {
+  //一定時間ごとに実行
+  if(millis() > prevMs + 10000) {
+    my_ball[cnt] = new Ball();
+    cnt++;
+    prevMs = millis();
+  }
   //background(43,6,94);
-  for(int i=0; i<numBall; i++) {
+  fill(43,6,94);
+  rect(0, 0, width, height);
+  my_block.showBlock();
+  for(int i=0; i<cnt; i++) {
     my_ball[i].show();
   }
-  my_block.showBlock();
+  my_block.checkClear();
+  scoreShow();
 }
 
 void keyPressed() {
@@ -167,4 +205,10 @@ void keyPressed() {
        my_bar.moveLeft(); //my_ballオブジェクトのmoveLeft()メソッドを実行
      }
   }
+}
+
+void scoreShow() {
+  textSize(24);
+  fill(0,0,100);
+  text("score:"+score, 260, 25);
 }
