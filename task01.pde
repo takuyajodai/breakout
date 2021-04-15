@@ -76,7 +76,7 @@ class Block {
           rect(blockX, blockY, 100, 30);
         }
         //接触条件
-        for(int j=0; j<numBall; j++) {
+        for(int j=0; j<cnt; j++) {
           if(my_ball[j].y - 10 < blockY + 30 && my_ball[j].y + 10 > blockY && my_ball[j].x - 10 < blockX + 100 && my_ball[j].x + 10 > blockX && blocks[i] == true) {
             my_ball[j].dirY = 1;
             blocks[i] = false; 
@@ -133,7 +133,9 @@ Ball[] my_ball;
 Bar my_bar;
 Block my_block;
 
-int numBall = 2;
+int numBall = 100;
+int prevMs = 0;
+int cnt = 0;
 
 //起動時実行
 void setup() {
@@ -142,9 +144,8 @@ void setup() {
   background(255);
   ellipseMode(RADIUS);
   my_ball = new Ball[numBall];
-  for(int i=0; i<numBall; i++) {
-    my_ball[i] = new Ball();
-  }
+  my_ball[cnt] = new Ball();
+  cnt++;
   my_bar = new Bar();
   my_block = new Block();
   my_block.createBlocks();
@@ -153,11 +154,17 @@ void setup() {
 
 //繰り返し実行
 void draw() {
+  //一定時間ごとに実行
+  if(millis() > prevMs + 5000) {
+    my_ball[cnt] = new Ball();
+    cnt++;
+    prevMs = millis();
+  }
   //background(43,6,94);
   fill(43,6,94);
   rect(0, 0, width, height);
   my_block.showBlock();
-  for(int i=0; i<numBall; i++) {
+  for(int i=0; i<cnt; i++) {
     my_ball[i].show();
   }
   
