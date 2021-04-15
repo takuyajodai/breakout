@@ -11,7 +11,7 @@ class Ball {
     y = 500;
     dirX = 1;
     dirY = -1;
-    v = 3;
+    v = 2;
     
   }
 
@@ -46,8 +46,6 @@ class Ball {
         dirY = -1;
       }
   
-      fill(43,6,94);
-      rect(0, 0, 600, 600);
       noStroke();
       fill(201,26,47);
       x += v*dirX;
@@ -78,11 +76,11 @@ class Block {
           rect(blockX, blockY, 100, 30);
         }
         //接触条件
-        if(checkBallHit(i)) {
-          for(int j=0; j<numBall; j++) {
+        for(int j=0; j<numBall; j++) {
+          if(my_ball[j].y - 10 < blockY + 30 && my_ball[j].y + 10 > blockY && my_ball[j].x - 10 < blockX + 100 && my_ball[j].x + 10 > blockX && blocks[i] == true) {
             my_ball[j].dirY = 1;
+            blocks[i] = false; 
           }
-          blocks[i] = false;
         }
      }
   }
@@ -99,7 +97,8 @@ class Block {
     }
   }
   
-  boolean checkBallHit(int i) {
+  //関数呼び出しにするとおそらく処理速度が間に合わずにdirY = 1 が効いてない
+  /*boolean checkBallHit(int i) {
     for(int j=0; j<numBall; j++) {
       if(my_ball[j].y - 10 < blockY + 30 && my_ball[j].y + 10 > blockY && my_ball[j].x - 10 < blockX + 100 && my_ball[j].x + 10 > blockX && blocks[i] == true) {
       return true;
@@ -107,6 +106,8 @@ class Block {
     }
     return false;
   }
+  */
+  
   
 }//class Block
 
@@ -153,10 +154,13 @@ void setup() {
 //繰り返し実行
 void draw() {
   //background(43,6,94);
+  fill(43,6,94);
+  rect(0, 0, width, height);
+  my_block.showBlock();
   for(int i=0; i<numBall; i++) {
     my_ball[i].show();
   }
-  my_block.showBlock();
+  
 }
 
 void keyPressed() {
